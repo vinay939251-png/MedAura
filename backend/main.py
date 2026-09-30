@@ -21,6 +21,7 @@ from core.routes import health, modules, incidents, sessions, devices, analytics
 from core.websocket.hub import websocket_router
 from core.middleware.error_handler import global_exception_handler
 from core.middleware.rate_limiter import RateLimiterMiddleware
+from core.logging_config import setup_logging
 
 
 @asynccontextmanager
@@ -31,9 +32,10 @@ async def lifespan(app: FastAPI):
     - Shutdown: Gracefully shut down all modules, close DB
     """
     # ── Startup ──
-    print(f"Starting {settings.app_name} ({settings.app_env})")
+    logger = setup_logging()
+    logger.info(f"Starting {settings.app_name} ({settings.app_env})")
     await init_db()
-    print("Database initialized")
+    logger.info("Database initialized")
 
     # Discover and initialize all detection modules
     await module_registry.discover_and_register()

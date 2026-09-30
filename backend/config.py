@@ -5,6 +5,7 @@ Global Configuration — Environment-driven, validated at startup.
 
 from typing import List, Optional
 from pydantic_settings import BaseSettings
+import pydantic
 from pydantic import field_validator
 
 
@@ -78,6 +79,14 @@ class Settings(BaseSettings):
     @property
     def is_production(self) -> bool:
         return self.app_env == "production"
+
+    @pydantic.model_validator(mode='after')
+    def validate_secrets(self) -> 'Settings':
+        if self.is_production and self.secret_key == "change-me-to-a-secure-random-string":
+            import logging
+            logging.warning("CRITICAL SECURITY RISK: Using default secret_key in production!")
+            raise ValueError("SECRET_KEY must be changed in production")
+        return self
 
     model_config = {
         "env_file": ".env",
