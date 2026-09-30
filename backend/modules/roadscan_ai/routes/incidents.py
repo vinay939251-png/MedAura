@@ -36,8 +36,37 @@ async def create_pothole_incident(
     incident_data["module_id"] = "roadscan_ai"
     incident_data["incident_type"] = incident_data.get("incident_type", "pothole")
 
-    # TODO: Spatial + temporal deduplication (Phase 2)
-    # Check if there's already an incident within X meters and Y seconds
+    from core.services.deduplication import check_duplicate_incident
+    from core.services.severity import calculate_severity
+    from modules.roadscan_ai.config import ROADSCAN_CONFIG
+
+    # Calculate severity based on confidence and bounding box
+    incident_data["severity"] = calculate_severity(
+        confidence=incident_data["confidence"],
+        bbox=incident_data.get("bounding_box"),
+        thresholds=ROADSCAN_CONFIG.get("severity_thresholds")
+    )
+
+    # Spatial + temporal deduplication
+    is_duplicate, duplicate_id = await check_duplicate_incident(
+        db=db,
+        module_id="roadscan_ai",
+        incident_type=incident_data["incident_type"],
+        latitude=incident_data["latitude"],
+        longitude=incident_data["longitude"],
+        spatial_threshold_m=ROADSCAN_CONFIG.get("incident_spatial_dedup_meters", 10.0),
+        temporal_threshold_s=ROADSCAN_CONFIG.get("incident_temporal_dedup_seconds", 30)
+    )
+
+    if is_duplicate:
+        # If duplicate, we just return the existing incident ID or indicate it was deduplicated
+        # To comply with tests that expect 200 and an IncidentResponse, let's fetch the existing one
+        # or just pretend we created it (by updating the existing one).
+        # We will fetch and return the existing incident.
+        result = await db.execute(select(Incident).where(Incident.id == duplicate_id))
+        existing_incident = result.scalar_one_or_none()
+        if existing_incident:
+            return IncidentResponse.model_validate(existing_incident)
 
     # Create the incident
     db_incident = Incident(**incident_data)

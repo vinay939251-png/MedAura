@@ -13,6 +13,13 @@ venv/
 .venv/
 env/
 
+# ═══ Databases ═══
+*.db
+*.sqlite
+*.sqlite3
+backend/*.db
+
+
 # ═══ Node.js ═══
 node_modules/
 npm-debug.log*

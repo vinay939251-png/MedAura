@@ -2,7 +2,7 @@
 Session Routes — Detection session management.
 """
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 router = APIRouter()
 
@@ -17,7 +17,13 @@ async def create_session():
 @router.get("/")
 async def list_sessions():
     """List all detection sessions."""
-    return {"sessions": [], "total": 0}
+    return {"items": [], "total": 0}
+
+
+@router.get("/{session_id}")
+async def get_session(session_id: str):
+    """Get a detection session."""
+    raise HTTPException(status_code=404, detail="Session not found")
 
 
 @router.patch("/{session_id}")

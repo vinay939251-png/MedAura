@@ -74,7 +74,8 @@ async def get_incident(
     incident = result.scalar_one_or_none()
 
     if not incident:
-        return {"error": "Incident not found"}, 404
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Incident not found")
 
     return IncidentResponse.model_validate(incident)
 
@@ -90,7 +91,8 @@ async def update_incident(
     incident = result.scalar_one_or_none()
 
     if not incident:
-        return {"error": "Incident not found"}, 404
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Incident not found")
 
     update_data = update.model_dump(exclude_unset=True)
     for key, value in update_data.items():
