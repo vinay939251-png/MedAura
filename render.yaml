@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: medaura-backend
+    env: python
+    region: oregon
+    buildCommand: "cd backend && pip install -r requirements.txt"
+    startCommand: "cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DATABASE_URL
+        value: sqlite+aiosqlite:///./smartcity.db
+      - key: CORS_ORIGINS
+        value: '["https://frontend-flax-eight-97.vercel.app"]'
+      - key: PYTHON_VERSION
+        value: 3.12.0
