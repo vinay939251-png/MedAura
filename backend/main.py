@@ -17,7 +17,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from config import settings
 from core.database import init_db, close_db
 from core.module_registry import module_registry
-from core.routes import health, modules, incidents, sessions, devices, analytics
+from core.routes import health, modules, incidents, sessions, devices, analytics, escalation, heatmap
 from core.websocket.hub import websocket_router
 from core.middleware.error_handler import global_exception_handler
 
@@ -81,7 +81,8 @@ def create_app() -> FastAPI:
     app.include_router(sessions.router, prefix="/api/v1/sessions", tags=["Sessions"])
     app.include_router(devices.router, prefix="/api/v1/devices", tags=["Devices"])
     app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["Analytics"])
-
+    app.include_router(escalation.router, prefix="/api/v1/escalations", tags=["Escalations"])
+    app.include_router(heatmap.router, prefix="/api/v1/heatmap", tags=["Heatmap"])
     # ── WebSocket Hub ──
     app.include_router(websocket_router)
 
