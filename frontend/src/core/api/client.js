@@ -1,6 +1,10 @@
 import axios from 'axios'
 
-const API_BASE = '/api/v1'
+const IS_PROD = import.meta.env.PROD
+const PROD_BACKEND_URL = 'https://medaura-1.onrender.com'
+const PROD_WS_URL = 'wss://medaura-1.onrender.com'
+
+const API_BASE = IS_PROD ? `${PROD_BACKEND_URL}/api/v1` : '/api/v1'
 
 const api = axios.create({
   baseURL: API_BASE,
@@ -38,6 +42,9 @@ export const getRoadscanStats = () => api.get('/roadscan_ai/incidents/stats')
 
 // ── WebSocket ──
 export function createWebSocket(channel = 'incidents') {
+  if (IS_PROD) {
+    return new WebSocket(`${PROD_WS_URL}/ws/${channel}`)
+  }
   const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
   const host = window.location.host
   return new WebSocket(`${protocol}//${host}/ws/${channel}`)
