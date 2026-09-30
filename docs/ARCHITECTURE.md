@@ -1,4 +1,4 @@
-<![CDATA[# 🛣️ ROADSCAN AI — Smart City Infrastructure Monitoring Platform
+# 🛣️ ROADSCAN AI — Smart City Infrastructure Monitoring Platform
 
 > **Real-time AI-powered road hazard detection using edge computing, computer vision, and geospatial analytics**
 
@@ -1245,4 +1245,3 @@ Optimize based on REAL MODEL + REAL DEVICE + REAL VIDEO + REAL LATENCY + REAL FP
 - All thresholds must remain configurable (see Configuration Architecture)
 - The `ModuleInterface` contract must be respected when adding new modules
 - Phase 2 should follow the directory structure defined above
-]]>

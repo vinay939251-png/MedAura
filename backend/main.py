@@ -20,6 +20,7 @@ from core.module_registry import module_registry
 from core.routes import health, modules, incidents, sessions, devices, analytics, escalation, heatmap
 from core.websocket.hub import websocket_router
 from core.middleware.error_handler import global_exception_handler
+from core.middleware.rate_limiter import RateLimiterMiddleware
 
 
 @asynccontextmanager
@@ -63,6 +64,7 @@ def create_app() -> FastAPI:
     )
 
     # ── Middleware ──
+    app.add_middleware(RateLimiterMiddleware, max_requests=100, window_seconds=60)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
